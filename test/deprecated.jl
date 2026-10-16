@@ -21,6 +21,12 @@ const _DEPWARN_ERROR = Base.JLOptions().depwarn == Int8(2)
     @test StandardRidge(Float32, 1.0f-2).reg isa Float32
 end
 
+@testset "package precompiles with --depwarn=error" begin
+    code = "Base.compilecache(Base.identify_package(\"ReservoirComputing\"))"
+    cmd = `$(Base.julia_cmd()) --startup-file=no --project=$(Base.active_project()) --depwarn=error -e $code`
+    @test success(pipeline(cmd; stdout = devnull, stderr = devnull))
+end
+
 @testset "train! is deprecated and matches train" begin
     rng = MersenneTwister(31)
     in_dims, res_dims, out_dims = 2, 12, 1
